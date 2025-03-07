@@ -1,5 +1,4 @@
-# Go_TODO_WZ
-
+# Go_TODO_WZ(未完成)
 这是一个Go语言初学者练习项目，主要包含以下功能：
 
 ## 项目结构
@@ -7,10 +6,6 @@
 - main.go: 包含主函数和随机数生成功能
   - GenRand(): 生成随机数
   - main(): 程序入口
-
-- SayHello.go: 实现CLI问候功能
-  - GreetCommand(): 创建CLI命令
-  - greetAction(): 处理问候命令
 
 - act/Todo.go: TODO功能实现
 - model/task.go: 任务模型定义
