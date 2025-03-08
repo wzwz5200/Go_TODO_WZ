@@ -6,74 +6,74 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
+	"time"
 )
 
+// 生成随机数（可用于生成任务 ID）
 func GenRand() int {
-
-	n := rand.Intn(100)
-	return n
+	rand.Seed(time.Now().UnixNano()) // 确保随机数不同
+	return rand.Intn(100)
 }
 
 func main() {
-	// 定义参数：名称、默认值、帮助信息
-
-	//ADD := flag.Bool("ADD", false, "提供此参数时打印 Hello")
-
 	// 解析命令行参数
 	flag.Parse()
 
-	// 检查是否提供了 `-hello`
-	// if *ADD {
-
-	// } else {
-	// 	fmt.Println("你好！这是一个终端任务代办事项应用📝")
-	// }
-
+	// 确保至少有一个子命令
 	if len(os.Args) < 2 {
-		fmt.Println("请提供子命令")
+		fmt.Println("请提供子命令: add | list | done")
 		return
 	}
 
 	switch os.Args[1] {
-	case "Add":
+	case "add":
+		// 创建 add 子命令
+		addCmd := flag.NewFlagSet("add", flag.ExitOnError)
 
-		addCmd := flag.NewFlagSet("ADD", flag.ExitOnError)
-		//	verbose := addCmd.Bool("v", false, "启用详细模式")
-
-		// 解析 ADD 子命令的参数
+		// 解析 add 后面的参数
 		addCmd.Parse(os.Args[2:])
 
-		fmt.Println("添加事项")
-
-		flag.CommandLine.Parse(os.Args[2:])
-
-		//解析 add 后面的参数
-		if flag.NArg() < 2 {
-			fmt.Println("使用方式: ADD 标题 描述")
+		// 确保有足够的参数
+		if addCmd.NArg() < 2 {
+			fmt.Println("使用方式: add <标题> <描述>")
 			return
 		}
 
-		Title := flag.Arg(0)       // 第一个参数
-		Description := flag.Arg(1) // 第二个参数
+		// 获取标题和描述
+		Title := addCmd.Arg(0)
+		Description := addCmd.Arg(1)
 
+		fmt.Println("添加事项 ✅")
 		fmt.Println("标题:", Title)
-		fmt.Println("描述", Description)
+		fmt.Println("描述:", Description)
 
+		// 调用 act.AddToDo 处理任务添加
 		act.AddToDo(Title, Description)
 
 	case "list":
-
+		// 列出所有任务
 		act.ListTask()
 
+	case "done":
+		// 解析 done 后的参数
+		if len(os.Args) < 3 {
+			fmt.Println("使用方式: done <ID>")
+			return
+		}
+
+		// 获取 ID 参数并转换
+		ID, err := strconv.Atoi(os.Args[2])
+		if err != nil {
+			fmt.Println("ID 无效:", err)
+			return
+		}
+
+		// 调用 act.DoneToDo 处理任务完成
+		act.DoneToDo(ID)
+
 	default:
-		fmt.Println("未知子命令")
+		fmt.Println("未知子命令:", os.Args[1])
+		fmt.Println("支持的命令: add | list | done")
 	}
-
-	// 解析命令行参数
-	flag.Parse()
-
-	// 使用参数（需解引用指针）
-
-	//act.AddToDo()
-
 }

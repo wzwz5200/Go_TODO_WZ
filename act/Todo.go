@@ -16,13 +16,24 @@ func GenRand() int {
 	return n
 }
 
+func GetNextId(T *[]model.Tasks) int {
+
+	MaxID := 1
+	for _, T := range *T {
+		if T.Id > MaxID {
+			MaxID = T.Id
+
+		}
+
+	}
+	return MaxID + 1
+
+}
+
 func AddToDo(Title string, Dsc string) {
 
-	// 新任务数据
-	newTask := model.Tasks{GenRand(), Title, Dsc, time.Now(), "NO"}
-
-	// 尝试读取现有文件数据
 	var tasks []model.Tasks
+	// 新任务数据
 	fileData, err := os.ReadFile("task.json")
 	if err == nil {
 		// 文件存在，解析 JSON 数据
@@ -35,7 +46,11 @@ func AddToDo(Title string, Dsc string) {
 		fmt.Println("读取文件错误:", err)
 		return
 	}
+	newTask := model.Tasks{GetNextId(&tasks), Title, Dsc, time.Now(), "NO"}
 
+	// 尝试读取现有文件数据
+
+	fmt.Println("事项ID：", newTask.Id)
 	// 将新任务添加到现有任务数组中
 	tasks = append(tasks, newTask)
 
@@ -82,4 +97,51 @@ func ListTask() {
 		fmt.Println() // 空行分隔每个任务
 	}
 
+}
+
+func DoneToDo(ID int) {
+	// 读取 JSON 文件
+	fileData, err := os.ReadFile("task.json")
+	if err != nil {
+		fmt.Println("读取文件错误:", err)
+		return
+	}
+
+	// 解析 JSON
+	var tasks []model.Tasks
+	if err := json.Unmarshal(fileData, &tasks); err != nil {
+		fmt.Println("解析 JSON 失败:", err)
+		return
+	}
+
+	// 查找任务并修改状态
+	found := false
+	for i, task := range tasks {
+		if task.Id == ID {
+			tasks[i].Status = "YES"
+			found = true
+			break
+		}
+	}
+
+	// 如果没有找到任务
+	if !found {
+		fmt.Printf("任务 ID %d 不存在\n", ID)
+		return
+	}
+
+	// 将修改后的任务列表写回 JSON 文件
+	newFileData, err := json.MarshalIndent(tasks, "", "  ")
+	if err != nil {
+		fmt.Println("JSON 序列化失败:", err)
+		return
+	}
+
+	err = os.WriteFile("task.json", newFileData, 0644)
+	if err != nil {
+		fmt.Println("写入文件失败:", err)
+		return
+	}
+
+	fmt.Printf("任务 ID %d 已标记为完成 ✅\n", ID)
 }
