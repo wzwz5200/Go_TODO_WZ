@@ -1,27 +1,31 @@
 /*
 Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"GO_CLI/service"
 	"fmt"
 
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
 // doneCmd represents the done command
 var doneCmd = &cobra.Command{
 	Use:   "done",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "此命令用来完成某一个事项",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("done called")
+		// fmt.Println("done called")
+		service.ListTask()
+		InputText := pterm.DefaultInteractiveTextInput
+
+		InputText.DefaultText = "请输入完成事项的ID"
+
+		result, _ := InputText.Show()
+
+		fmt.Println(result)
+
 	},
 }
 
