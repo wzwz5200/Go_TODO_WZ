@@ -6,6 +6,7 @@ package cmd
 import (
 	"GO_CLI/service"
 	"fmt"
+	"strconv"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -24,7 +25,13 @@ var doneCmd = &cobra.Command{
 
 		result, _ := InputText.Show()
 
-		fmt.Println(result)
+		ID, err := strconv.Atoi(result)
+		if err != nil {
+			// 如果转换失败，打印错误信息
+			fmt.Println("输入的ID无效:", err)
+			return
+		}
+		service.DoneTask(ID)
 
 	},
 }
